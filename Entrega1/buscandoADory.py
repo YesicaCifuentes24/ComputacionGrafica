@@ -28,6 +28,18 @@ def spritecollideany(sprite,grupo):
        return s
    return None
 
+def spritecollideanyGroupGroup(grupoA,grupoB):
+   #FUNCION USADA PARA VERIFICAR SI UN TIBURON 
+   #COLISIONA CON DORY
+   #GrupoA -> Dory, grupoB-> Tiburones
+   for sA in grupoA:
+     ##Dory
+     funcion_colision=sA.rect_colision.colliderect
+     for sB in grupoB:
+      if funcion_colision(sB.rect_colision):
+         return sB
+   return None
+
 def a_coordenadas(fila,columna):
    return (60+columna * 48 , 80+fila*43)
 
@@ -368,7 +380,7 @@ def main():
     visor= pygame.display.set_mode((640,480))
     fuente=pygame.font.Font(None,30)
     fuente1=pygame.font.Font(None,70)
-    pygame.display.set_caption("--LABERINTO--")
+    pygame.display.set_caption("--Buscando a Dory--")
     temporizador=pygame.time.Clock()
     color= (200,200,200)
     fondo = cargar_imagen('fondo4.png', optimizar= True)
@@ -408,8 +420,19 @@ def main():
         puntos_en_colision1 = spritecollideany(jugador, puntos)
         puntos_en_colision2 = spritecollideany(jugador, final)
         puntos_en_colision3= spritecollideany(jugador,enemigos)
+        puntosColisionTiburonDory= spritecollideanyGroupGroup(final,enemigos)
        # puntos_en_colision4= spritecollideany(enemigos,enemigos)
         
+        #si un tiburon colisiona con Dory, fin de juego
+        if puntosColisionTiburonDory: 
+          #print "Dory ha muerto"
+          texto="PERDISTE, DORY HA MUERTO"
+          mensaje=fuente.render(texto,3,NEGRO)
+          visor.blit(mensaje,(150,280))
+          pygame.display.flip()
+          time.sleep(2)
+          salir=False  
+          fin=True
         # colision con puntos
         if puntos_en_colision1 and puntos_en_colision1.se_puede_comer:
           puntos_en_colision1.comer()
@@ -440,7 +463,7 @@ def main():
 
         if seg ==31:
           texto="PERDISTE :("
-          mensaje=fuente.render(texto,3,AZUL)
+          mensaje=fuente.render(texto,3,NEGRO)
           visor.blit(mensaje,(300,280))
           pygame.display.flip()
           time.sleep(2)
@@ -449,14 +472,14 @@ def main():
 
         if vida==0:
           texto="PERDISTE :("
-          mensaje=fuente.render(texto,3,AZUL)
+          mensaje=fuente.render(texto,3,NEGRO)
           visor.blit(mensaje,(300,280))
           pygame.display.flip()
           time.sleep(2)
           salir=False  
 
-        texto="puntos: " + str(punto) + "               nivel:" + str(nivel) + "      tiempo:"+ str(seg ) + "       vidas:"+ str(vida)
-        mensaje=fuente.render(texto,1,BLANCO)
+        texto="Puntos: " + str(punto) + "               Nivel:" + str(nivel) + "      Tiempo:"+ str(seg ) + "       Vidas:"+ str(vida)
+        mensaje=fuente.render(texto,1,NEGRO)
         visor.fill((30,145,255))
         visor.blit(fondo,(0,0))     
         visor.blit(mensaje,(15,5))
