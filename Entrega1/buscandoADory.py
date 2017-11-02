@@ -47,11 +47,11 @@ def a_celdas(pos_x,pos_y):
    return ((pos_y-80)/43 , (pos_x-60)/48)
 #--------------------------------------------------------------
 
-#clase final
+#clase final, Dory
 class Final(Sprite):
    def __init__(self,x,y):
     Sprite.__init__(self)
-    self.image=cargar_imagen('tronco.png')
+    self.image=cargar_imagen('Dory.png')
     self.rect= self.image.get_rect()
     self.rect.center = (x, y)
     self.rect_colision = self.rect.inflate(-30,-10)
@@ -127,7 +127,7 @@ class Puntos(Sprite):
 #clase escenario
 class Escenario:
     def __init__(self, nivel=1):
-      self.pared = cargar_imagen('bloque.png')
+      self.pared = cargar_imagen('bloqueBasura.png')
       self.cesped=cargar_imagen('cesped.png')
       self.mapa = self.cargar_nivel(nivel)
       self.delay = None
@@ -162,6 +162,8 @@ class Escenario:
 
     def crear_objetos(self, lifes, puntos, final, enemigos):
         y = 0
+        x1 = 0
+        y1 = 0
         for fila in self.mapa:
             x = 0
             for celda in fila:
@@ -174,9 +176,12 @@ class Escenario:
                     final.add(Final(pos_x, pos_y))
                 elif celda=='$':
                   enemigos.add(Enemigos(pos_x,pos_y,y,x))
-                #print "x--",x," y--",y
+                elif celda=='&':
+                  x1,y1=pos_x,pos_y
+                  #print "x--",x," y--",y
                 x+=1
             y+=1
+        return [x1,y1]
 
 
     def puede_avanzar(self, (fila, columna), (df, dc)):
@@ -293,7 +298,7 @@ class Jugador(Sprite):
     self.enemigos= enemigos
 
    def cargar_imagenes(self):
-    self.normal = cargar_imagen('player.png')
+    self.normal = cargar_imagen('NemoJugador.png')
     
    def update(self):
     if not self.en_movimiento:
@@ -383,7 +388,7 @@ def main():
     pygame.display.set_caption("--Buscando a Dory--")
     temporizador=pygame.time.Clock()
     color= (200,200,200)
-    fondo = cargar_imagen('fondo4.png', optimizar= True)
+    fondo = cargar_imagen('fondo.png', optimizar= True)
     
 
     sprites = pygame.sprite.OrderedUpdates()
@@ -416,7 +421,7 @@ def main():
            if evento.type == pygame.QUIT:
             salir = False
  
-    
+        
         puntos_en_colision1 = spritecollideany(jugador, puntos)
         puntos_en_colision2 = spritecollideany(jugador, final)
         puntos_en_colision3= spritecollideany(jugador,enemigos)
@@ -449,9 +454,47 @@ def main():
           #pass
 
         if  puntos_en_colision2 and  puntos_en_colision2.terminar:
-          if punto==total_puntos*10:
+          #Verificar el nivel del juego
+          #si el nivel es 1 entonces pasa a nivel 2
+          if nivel ==1:
+            nivel += 1;
+            #Mensaje nivel 2
+            texto="HAS ENCONTRADO A DORY, PASASTE AL NIVEL 2"
+            mensaje=fuente.render(texto,3,NEGRO)
+            visor.blit(mensaje,(100,280))
+            pygame.display.flip()
+
+            #Construir escenario de nivel dos
+            time.sleep(2)
+            jugador.desaparece()
+            sprites.remove(jugador)
+            sprites.remove(enemigos)
+            sprites.remove(final)
+            sprites.remove(puntos)
+
+            enemigos= pygame.sprite.Group()
+            final= pygame.sprite.Group()
+            puntos= pygame.sprite.Group()
+
+            fondo = cargar_imagen('fondo.png', optimizar= True)
+            escenario = Escenario(nivel)
+            escenario.imprimir(fondo)
+
+            pos_x, pos_y=escenario.crear_objetos(puntos, lifes, final,enemigos) # Me retorna la pos del jugador
+            x1, y1= a_celdas( pos_x, pos_y) # me lo convierte a celdas
+
+            jugador= Jugador(escenario,enemigos)
+            sprites.add(puntos)
+            sprites.add(final)
+            sprites.add(jugador)
+            sprites.add(enemigos)
+
+          #Si el nivel es 2 termina el juego y el jugador gana
+          elif nivel ==2:
+            #Fin de juego
+            #if punto==total_puntos*10:
             puntos_en_colision2.llegar()
-            texto="FELICITACIONES, HAS ENCONTRADO A DORY"
+            texto="FELICITACIONES, HAS TERMINADO EL JUEGO"
             mensaje=fuente.render(texto,3,NEGRO)
             visor.blit(mensaje,(100,280))
             pygame.display.flip()
