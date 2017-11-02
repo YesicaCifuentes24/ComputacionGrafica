@@ -123,9 +123,7 @@ class Escenario:
     def imprimir(self, fondo):
 	
         imagenes = {
-	    '.': self.cesped,
             '#': self.pared,
-	    
             }
 
         y = 0
@@ -374,7 +372,7 @@ def main():
     temporizador=pygame.time.Clock()
     color= (200,200,200)
     fondo = cargar_imagen('fondo4.png', optimizar= True)
-    logotipo=cargar_imagen('ex.gif',)
+    
 
     sprites = pygame.sprite.OrderedUpdates()
 
@@ -421,6 +419,8 @@ def main():
         if puntos_en_colision3 and puntos_en_colision3.se_puede_comer:
             puntos_en_colision3.comer()
             vida=vida-1 
+            # aca tengo que buscar la manera de duplicar el enemigo
+            #la posicion del enemigo sera random
 
         #if puntos_en_colision4:
           #pass
@@ -428,9 +428,9 @@ def main():
         if  puntos_en_colision2 and  puntos_en_colision2.terminar:
           if punto==total_puntos*10:
             puntos_en_colision2.llegar()
-            texto="GANASTE "
-            mensaje=fuente.render(texto,3,AZUL)
-            visor.blit(mensaje,(300,280))
+            texto="FELICITACIONES, HAS ENCONTRADO A DORY"
+            mensaje=fuente.render(texto,3,NEGRO)
+            visor.blit(mensaje,(100,280))
             pygame.display.flip()
             time.sleep(2)
             salir=False
@@ -464,7 +464,6 @@ def main():
         sprites.update()
         
         sprites.draw(visor)
-        visor.blit(logotipo,(640-80,520-80))
         pygame.display.flip()
         temporizador.tick(60)
 
