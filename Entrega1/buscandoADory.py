@@ -114,7 +114,7 @@ class Puntos(Sprite):
 
    def update_desaparecer(self):
     self.delay -=1
-    if self.delay<1:
+    if self.delay <1:
        self.kill()
 
    def comer(self):
@@ -160,7 +160,7 @@ class Escenario:
         archivo.close()
         return mapa
 
-    def crear_objetos(self, lifes, puntos, final, enemigos):
+    def crear_objetos(self, puntos,lifes, final, enemigos):
         y = 0
         x1 = 0
         y1 = 0
@@ -280,14 +280,14 @@ class Enemigos(Sprite):
 #clase jugador
 class Jugador(Sprite):
 
-   def __init__(self,escenario,enemigos):
+   def __init__(self,x,y,escenario,enemigos):
     Sprite.__init__(self)
     self.cargar_imagenes()
     self.image=self.normal
     self.escenario=escenario
     self.en_movimiento=True
-    self.columna_destino=1
-    self.fila_destino=1
+    self.columna_destino=y
+    self.fila_destino=x
     self.delay = None
     self.x=-50
     self.y=200
@@ -400,10 +400,12 @@ def main():
 
     escenario = Escenario()
     escenario.imprimir(fondo)
-    escenario.crear_objetos(puntos, lifes, final,enemigos)
+    pos_x, pos_y = escenario.crear_objetos(puntos, lifes, final,enemigos)
+    x1, y1 = a_celdas (pos_x, pos_y)
 
-    jugador= Jugador(escenario,enemigos)
+    jugador= Jugador(x1,y1,escenario,enemigos)
     sprites.add(puntos)
+    sprites.add(lifes)
     sprites.add(final)
     sprites.add(jugador)
     sprites.add(enemigos)
@@ -414,7 +416,7 @@ def main():
     punto = 0
     salir=True
     t0= pygame.time.get_ticks()
-    vida=3
+    vida=4
     while salir:
         #reloj.tick(60)
         for evento in pygame.event.get():
@@ -426,8 +428,12 @@ def main():
         puntos_en_colision2 = spritecollideany(jugador, final)
         puntos_en_colision3= spritecollideany(jugador,enemigos)
         puntosColisionTiburonDory= spritecollideanyGroupGroup(final,enemigos)
+        colisionVida= spritecollideany(jugador,lifes)
        # puntos_en_colision4= spritecollideany(enemigos,enemigos)
         
+        if colisionVida: 
+          print "colision vida"
+          vida += 1
         #si un tiburon colisiona con Dory, fin de juego
         if puntosColisionTiburonDory: 
           #print "Dory ha muerto"
@@ -483,8 +489,9 @@ def main():
             pos_x, pos_y=escenario.crear_objetos(puntos, lifes, final,enemigos) # Me retorna la pos del jugador
             x1, y1= a_celdas( pos_x, pos_y) # me lo convierte a celdas
 
-            jugador= Jugador(escenario,enemigos)
+            jugador= Jugador(x1, y1, escenario,enemigos)
             sprites.add(puntos)
+            sprites.add(lifes)
             sprites.add(final)
             sprites.add(jugador)
             sprites.add(enemigos)
