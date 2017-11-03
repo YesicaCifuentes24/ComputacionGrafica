@@ -389,7 +389,8 @@ def main():
     temporizador=pygame.time.Clock()
     color= (200,200,200)
     fondo = cargar_imagen('fondo.png', optimizar= True)
-    
+    pygame.mixer.music.load("musicafondo.mp3")
+    pygame.mixer.music.play(2)
 
     sprites = pygame.sprite.OrderedUpdates()
 
